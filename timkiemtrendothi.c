@@ -1,0 +1,139 @@
+#include<stdio.h>
+#define max 100
+static int A[max][max];
+static int B[max][max];
+static int tapdinh[max];
+static int pre[max];
+static int prelienthong[max];
+static int post[max];
+static int postlienthong[max];
+static int ccnum[max];
+int cc=0;
+static int visited[max];
+static int visitedlienthong[max];
+int sodinh,socanh;
+int clock=1,clocklienthong=1;
+
+void previsit(int v)
+{
+    
+    pre[v]=clock;
+    clock+=1;
+}
+void previsitlienthong(int v)
+{
+    
+    prelienthong[v]=clocklienthong;
+    clocklienthong+=1;
+}
+void postvisit(int v)
+{
+    post[v]=clock;
+    clock+=1;
+}
+void postvisitlienthong(int v)
+{   ccnum[v]=cc; 
+    postlienthong[v]=clocklienthong;
+    clocklienthong+=1;
+}
+void explore(int v)
+{
+    visited[v]=1;
+    previsit(v);
+    for(int u=1;u<=sodinh;u++)
+    
+    if(B[v][u]==1)
+    
+        if(visited[u]==0)
+        
+            explore(u);
+postvisit(v);
+}
+void explorelienthong(int v)
+{
+    visitedlienthong[v]=1;
+    previsitlienthong(v);
+    for(int u=1;u<=sodinh;u++)
+    
+    if(A[v][u]==1)
+    
+        if(visitedlienthong[u]==0)
+        
+            explorelienthong(u);
+postvisitlienthong(v);
+}
+void DFS()
+{
+    for(int v=1;v<=sodinh;v++)
+    {
+        if(visited[v]==0)
+        {
+            explore(v);
+        }
+    }
+}
+void DFSLIENTHONG()
+{   int v;
+    for(int z=1;z<=sodinh;z++)
+    {   
+       v=tapdinh[z];
+        if(visitedlienthong[v]==0)
+        {   cc=cc+1;
+            explorelienthong(v);
+        }
+    }
+}
+void sapxep()
+{
+   
+   int sapxep=0;
+   int sapdat=0;
+   for(int i=1;i<=sodinh;i++)
+   {
+       tapdinh[i]=i;
+   }
+   for(int i=1;i<sodinh;i++)
+       for(int j=i+1;j<sodinh-1;j++)
+           if(post[i]<post[j])
+           {   sapdat=post[i];
+               post[i]=post[j];
+               post[j]=sapdat;
+               sapxep=tapdinh[i];
+               tapdinh[i]=tapdinh[j];
+               tapdinh[j]=sapxep;
+           }
+       
+   
+}
+int main()
+{
+      
+    scanf("%d ",&sodinh);
+    scanf("%d ",&socanh);
+    int x,y;
+    for (int i=0;i<socanh;i++)
+    {
+    scanf("%d %d",&x,&y);
+    A[x][y]=1;
+    B[y][x]=1;
+    }
+    
+    DFS();
+    sapxep();
+    DFSLIENTHONG();
+    printf("Do thi co: %d thanh phan lien thong\n ",cc);
+    for(int j=1;j<=cc;j++)
+    {    
+        printf("Thanh phan lien thong thu %d:",j);
+        for(int a=1;a<=sodinh;a++)
+        {
+            if(ccnum[a]==j)
+            {
+                printf("%d ",a);
+            }
+        }
+        printf("\n");
+    }
+return 0;
+}
+
